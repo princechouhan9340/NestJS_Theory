@@ -12,103 +12,77 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TestController = void 0;
+exports.userController = void 0;
 const common_1 = require("@nestjs/common");
-let TestController = class TestController {
-    getProfile(req, res) {
-        console.log(req);
-        res.status(200);
-        const num = ~~(Math.random() * 10 + 1);
-        if (num < 5) {
-            return {
-                url: "/users/order",
-                statusCode: 307
-            };
+const dto_1 = require("./dto");
+let USERS = [];
+let userController = class userController {
+    createUser(createUserDTO) {
+        USERS.push(createUserDTO);
+        console.log(USERS);
+        return USERS;
+    }
+    getUsers() {
+        return USERS;
+    }
+    getUserByName(param) {
+        let x = USERS.find((user) => user.name == param);
+        console.log(x);
+        return x;
+    }
+    updateUsers(param, updateuserdata) {
+        let x = USERS.findIndex((user) => user.name == param);
+        console.log(x);
+        if (x == -1) {
+            return "no user found";
         }
         else {
-            return {
-                url: "/users/cart",
-                statusCode: 307
-            };
+            USERS[x] = updateuserdata;
+            return USERS[x];
         }
     }
-    getOrder() {
-        return "this is order page redirected by profile";
-    }
-    getCart() {
-        return "this is cart redirect by profile";
-    }
-    getVideo(params) {
-        console.log(params, params.name);
-        return params;
-    }
-    getQueryParam(query) {
-        console.log(query);
-        return query;
-    }
-    getHeaders(headers) {
-        console.log(headers);
-        return headers;
-    }
-    getPostreq(requestData) {
-        console.log(requestData);
-        return requestData;
+    deleteUser(name) {
+        USERS = USERS.filter((user) => user.name !== name);
+        return USERS;
     }
 };
-exports.TestController = TestController;
+exports.userController = userController;
 __decorate([
-    (0, common_1.Get)('/profile'),
-    (0, common_1.HttpCode)(204),
-    (0, common_1.Header)('case-cookies', "ok"),
-    (0, common_1.Header)('X-name', "Prince"),
-    (0, common_1.Redirect)('/users/order', 307),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Res)({ passthrough: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getProfile", null);
-__decorate([
-    (0, common_1.Get)('/order'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getOrder", null);
-__decorate([
-    (0, common_1.Get)('/cart'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getCart", null);
-__decorate([
-    (0, common_1.Get)('/params/:id/:name'),
-    __param(0, (0, common_1.Param)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getVideo", null);
-__decorate([
-    (0, common_1.Get)('/query'),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getQueryParam", null);
-__decorate([
-    (0, common_1.Get)('/headers'),
-    __param(0, (0, common_1.Headers)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TestController.prototype, "getHeaders", null);
-__decorate([
-    (0, common_1.Post)('/postreq'),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.createUserDTO]),
+    __metadata("design:returntype", void 0)
+], userController.prototype, "createUser", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], userController.prototype, "getUsers", null);
+__decorate([
+    (0, common_1.Get)(':name'),
+    __param(0, (0, common_1.Param)("name")),
+    __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], TestController.prototype, "getPostreq", null);
-exports.TestController = TestController = __decorate([
+], userController.prototype, "getUserByName", null);
+__decorate([
+    (0, common_1.Put)(":name"),
+    __param(0, (0, common_1.Param)("name")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, dto_1.createUserDTO]),
+    __metadata("design:returntype", void 0)
+], userController.prototype, "updateUsers", null);
+__decorate([
+    (0, common_1.Delete)(':name'),
+    __param(0, (0, common_1.Param)("name")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], userController.prototype, "deleteUser", null);
+exports.userController = userController = __decorate([
     (0, common_1.Controller)('/users')
-], TestController);
+], userController);
 //# sourceMappingURL=users.controller.js.map

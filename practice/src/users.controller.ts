@@ -1,120 +1,44 @@
-/* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Req, HttpCode, Res, Header, Redirect, Param, Query, Headers, Body } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Controller, Post, Get, Put,Delete, Body, Param } from "@nestjs/common";
+import { createUserDTO } from "./dto";
 
-interface videoParams{
-  id:number;
-  name:string
-}
-
-interface queryParam{
-  id:number;
-  name:string
-}
-
-// dto- data transfer object 
-interface postReqDTO{
-   name: string
-   id: number
-}
+let USERS:any = []
 @Controller('/users')
-export class TestController {
- 
-  @Get('/profile')
-  @HttpCode(204)
-  @Header('case-cookies',"ok")
-  @Header('X-name',"Prince")
-  @Redirect('/users/order', 307)// bu default code 302, 
-  getProfile(@Req() req:Request, @Res({passthrough:true}) res:Response) {
-    console.log(req)
+export class userController{
 
-    // if you are not import Res than nestjs sent response on return only, most preferable method ---------
-    // return {
-    //     name: "prince",
-    //     route:"/users/profile",
-    //      by: "nestjs only"
-    // }
-
-    res.status(200)   // it over write the above status code
-    // when you import Res you need to sent response and handle by your self { data type} 
-    // res.json({
-    //   name: "prince",
-    //   route:"/users/profile",
-    //    by:"by response"
-    // })
-
-    // if you want to response handle by nestjs you need to pass this value in response decorator {passthrough:true}
-    //  return {
-    //     name: "prince",
-    //     route:"/users/profile",
-    //     by:"using response but handle by nestjs"
-    // }
-
-    //Dynamic switch rout or redirection using conditions ------
-    const num = ~~ (Math.random() * 10+1);
-
-    if(num<5){
-      return {
-        url:"/users/order",
-        statusCode: 307
-      }
-    }else{
-      return {
-        url:"/users/cart",
-        statusCode: 307
-      }
+    @Post()
+    createUser(@Body() createUserDTO:createUserDTO){
+        USERS.push(createUserDTO);
+        console.log(USERS)
+        return USERS
     }
-  }
 
-  @Get('/order')
-  getOrder(){
-    return "this is order page redirected by profile"
-  }
+    @Get()
+    getUsers(){
+        return USERS;
+    }
 
-  @Get('/cart')
-  getCart(){
-    return "this is cart redirect by profile"
-  }
+    @Get(':name')
+    getUserByName(@Param("name") param){
+        let x = USERS.find((user)=> user.name == param);
+        console.log(x)
+        return x
+    }
 
-  // for rout parameters
-  @Get('/params/:id/:name')   // :id its a dynamic data or parameter
+    @Put(":name")
+    updateUsers(@Param("name") param:string, @Body() updateuserdata:createUserDTO){
+        let x = USERS.findIndex((user)=> user.name == param);
+        console.log(x)
+        if(x == -1){
+            return "no user found"
+        }else{
+            USERS[x] = updateuserdata;
+            return USERS[x]
+        }
+    }
 
-  // getVideo(@Param() param:any){
-  //   console.log(param);
-  //   // {id:500}
-  //   return param
-  // }
-
-  // getVideo(@Param("id") Param:number|string){  // if we pass key name it will return only value else return object--
-  //   console.log(Param);
-  //   return `this is param ${Param}`
-  // }
-
-
-  getVideo(@Param() params:videoParams){
-    console.log(params, params.name);
-    return params
-  }
-
-  // Query parameters--
-  @Get('/query')
-  getQueryParam(@Query() query:queryParam){
-    console.log(query)
-    return query
-  }
-
-  // headers from request 
-  @Get('/headers')
-  getHeaders(@Headers() headers){
-    console.log(headers)
-    return headers
-  }
-
-  // post request handling, we are handling here urlencoded and JSON data in the body from the client--
-  @Post('/postreq')
-  getPostreq(@Body() requestData:postReqDTO){
-    console.log(requestData);
-    return requestData
-  }
-
+    @Delete(':name')
+    deleteUser(@Param("name") name){
+        USERS = USERS.filter((user) => user.name !== name);
+        return USERS
+    }
 }
